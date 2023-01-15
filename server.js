@@ -1,6 +1,6 @@
 'use strict';
 
-// http://localhost:3001/weather?lat=30&lon=15&city_name=Amman
+// http://localhost:3001/weather?lat=30&lon=15&city_name=Amman - Desired URL structure
 
 // *********** REQUIRE ************************
 const express = require('express');
@@ -8,53 +8,45 @@ const app = express();
 require('dotenv').config();
 const cors = require('cors');
 const data = require('./data/weather.json');
+const axios = require('axios');
 
+// *************** CLASSES ***************************
+class Forecast {
+  constructor(day) {
+    this.dateTime = day.datetime;
+    this.description = day.weather.description;
+    this.highTemp = day.high_temp;
+    this.lowTemp = day.low_temp;
+  }
+}
+
+// ****************** MIDDLEWARE *************************
 app.use(cors());
+
+// ********************** ROUTING *****************************
 
 app.get('/', (req, res) => {
   res.status(200).send(`Welcome to my home`);
 });
-app.get('/hello', (req, res) => {
-  console.log(req.query);
-  let firstName = req.query.firstName;
-  let lastName = req.query.lastName;
-});
 
-app.get('/pet', (req, res, next) => {
+app.get('/weather', async (req, res, next) => {
   try {
-    let species = req.query.species;
-    console.log(data);
-    let dataToGroom = data.find(pet => pet.species === species);
-    let dataToSend = new Pet(dataToGroom);
+    let lat = req.query.lat;
+    let lon = req.query.lon;
+    let userCity = req.query.city_name;
+    let searchURL = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.REACT_APP_WEATHERBIT_API_KEY}&days=5&lat=${lat}&lon=${lon}&units=I`;
+    let latLongWeather = await axios.get(searchURL);
+    let dataToSend = latLongWeather.data.data.map(day => new Forecast(day));
+    console.log(dataToSend);
     res.status(200).send(dataToSend);
-  } catch(error) {
-    next(error);
-  }
-});
-
-app.get('/weather', (req, res, next) => {
-  try {
-    // let lat = req.query.lat;
-    // let lon = req.query.lon;
-    let searchQuery = req.query.city_name;
-    let userCity = data.find((cityObj => cityObj.city_name.toLowerCase() === searchQuery.toLowerCase()));
-    console.log(userCity);
-    let strippedData = userCity.data.map(day => new Forecast(day));
-    console.log(strippedData);
-    res.status(200).send(strippedData);
 
   } catch (error) {
     next(error);
   }
 });
 
-class Forecast {
-  constructor(day) {
-    this.dateTime = day.datetime;
-    this.description = day.weather.description;
-  }
-}
 
+// ***************** BOILERPLATE ***********************
 app.get('*', (req, res) => {
   res.status(404).send('Sorry you messed that up and have arrived at a page that does not exist. 404');
 });
