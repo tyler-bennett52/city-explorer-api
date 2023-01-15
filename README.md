@@ -1,5 +1,3 @@
-# city-explorer-api
-
 # Project Name
 
 **Author**: Tyler Bennett
@@ -37,6 +35,26 @@ Finish time: 1730
 
 Actual time needed to complete: 45 mins
 
+### Feature #4 - Weather
+
+Estimate of time needed to complete: 2 hours
+
+Start time: 1400
+
+Finish time: 1630
+
+Actual time needed to complete: 2 hrs 30 mins
+
+### Feature #5 - Errors
+
+Estimate of time needed to complete: 5 minutes
+
+Start time: 1700
+
+Finish time: 1715
+
+Actual time needed to complete: 15 mins
+
 ## Overview
 
 This is an app that displays information about cities such as which city is the city, and the map to the city and maybe one day even a weather in your city. Please use this app.
@@ -48,8 +66,6 @@ To get started stop reading this readme and proceed to tb.city-explorer.netlify.
 ## Architecture
 
 
-[Day 1 architecture](./public/Screenshot_20230116_055128.png)
-
 Javascript
 React
 Bootstrap
@@ -57,9 +73,8 @@ Netlify
 
 ## Change Log
 
-
-
 01-16-2023 Application functional. Maps and locations display according to user input.
+01-17-2023 Add extremely limited Weather functionality
 
 ## Credit and Collaborations
 
