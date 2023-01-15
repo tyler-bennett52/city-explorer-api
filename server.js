@@ -20,6 +20,13 @@ class Forecast {
   }
 }
 
+class Movie {
+  constructor(movie) {
+    this.title = movie.title
+    this.posterImg = movie.poster_path
+  }
+}
+
 // ****************** MIDDLEWARE *************************
 app.use(cors());
 
@@ -33,17 +40,31 @@ app.get('/weather', async (req, res, next) => {
   try {
     let lat = req.query.lat;
     let lon = req.query.lon;
-    let userCity = req.query.city_name;
-    let searchURL = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.REACT_APP_WEATHERBIT_API_KEY}&days=5&lat=${lat}&lon=${lon}&units=I`;
-    let latLongWeather = await axios.get(searchURL);
-    let dataToSend = latLongWeather.data.data.map(day => new Forecast(day));
-    console.log(dataToSend);
-    res.status(200).send(dataToSend);
+    let weatherURL = `https://api.weatherbit.io/v2.0/forecast/daily?key=${process.env.REACT_APP_WEATHERBIT_API_KEY}&days=5&lat=${lat}&lon=${lon}&units=I`;
+    let latLongWeather = await axios.get(weatherURL);
+    let weatherDataToSend = latLongWeather.data.data.map(day => new Forecast(day));
+    // console.log(dataToSend);
+    res.status(200).send(weatherDataToSend);
 
   } catch (error) {
     next(error);
   }
 });
+
+app.get('/movies', async (req, res, next) => {
+  try {
+    let userCity = req.query.city_name;
+    let movieURL = `https://api.themoviedb.org/3/search/movie/?api_key=${process.env.REACT_APP_MOVIES_API_KEY}&query=${userCity}&include_adult=false&page=1`;
+    // let movieURL = `https://api.themoviedb.org/3/search/movie?api_key=${process.env.REACT_APP_MOVIES_API_KEY}&query=${userCity}&page=1&include_adult=false`
+    let movieData = await axios.get(movieURL);
+    const topFive = movieData.data.results.splice(0, 5);
+    let movieDataToSend = topFive.map(movie => new Movie(movie))
+    console.log(movieDataToSend)
+    res.status(200).send(movieDataToSend);
+  } catch (error) {
+    next(error);
+  }
+})
 
 
 // ***************** BOILERPLATE ***********************
@@ -53,6 +74,6 @@ app.get('*', (req, res) => {
 
 app.use((error, req, res, next) => {
   res.status(500).send(error.message);
-}); 
+});
 const PORT = process.env.PORT || 3002;
 app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
