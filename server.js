@@ -1,5 +1,7 @@
 'use strict';
 
+// http://localhost:3001/weather?lat=30&lon=15&city_name=Amman
+
 // *********** REQUIRE ************************
 const express = require('express');
 const app = express();
@@ -11,7 +13,7 @@ const data = require('./data/weather.json');
 app.use(cors());
 
 app.get('/', (req, res) => {
-  res.status(200).send(`${req}`);
+  res.status(200).send(`Welcome to my home`);
 });
 app.get('/hello', (req, res) => {
   console.log(req.query);
@@ -36,17 +38,25 @@ app.get('/weather', (req, res, next) => {
   try {
     let lat = req.query.lat;
     let lon = req.query.lon;
-    res.status(200).send(`${lat}, ${lon}`);
+    let searchQuery = req.query.city_name;
+    let userCity = data.find((cityObj => cityObj.city_name === searchQuery));
+    // console.log(userCity);
+    // console.log(data);
+    let strippedData = new Forecast(userCity, lat, lon);
+    console.log(strippedData);
+    res.status(200).send(strippedData);
 
   } catch (error) {
     next(error);
   }
 });
 
-class Pet {
-  constructor(petObj) {
-    this.name = petObj.name,
-    this.breed = petObj.breed;
+class Forecast {
+  constructor(cityObj, lat, lon) {
+    this.dateTime = cityObj.data[0].datetime;
+    this.description = cityObj.data[0].weather.description;
+    this.lat = lat;
+    this.lon = lon;
   }
 }
 
