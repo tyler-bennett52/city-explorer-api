@@ -53,8 +53,12 @@ app.get('/weather', (req, res, next) => {
 
 class Forecast {
   constructor(cityObj, lat, lon) {
-    this.dateTime = cityObj.data[0].datetime;
-    this.description = cityObj.data[0].weather.description;
+    this.dateTimeOne = cityObj.data[0].datetime;
+    this.descriptionOne = cityObj.data[0].weather.description;
+    this.dateTimeTwo = cityObj.data[1].datetime;
+    this.descriptionTwo = cityObj.data[1].weather.description;
+    this.dateTimeThree = cityObj.data[2].datetime;
+    this.descriptionThree = cityObj.data[2].weather.description;
     this.lat = lat;
     this.lon = lon;
   }
