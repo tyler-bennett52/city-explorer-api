@@ -8,7 +8,6 @@ const app = express();
 require('dotenv').config();
 const cors = require('cors');
 const data = require('./data/weather.json');
-// const { response } = require('express');
 
 app.use(cors());
 
@@ -19,7 +18,6 @@ app.get('/hello', (req, res) => {
   console.log(req.query);
   let firstName = req.query.firstName;
   let lastName = req.query.lastName;
-  res.status(200).send(`Hello ${firstName} ${lastName}, welcome to my home`);
 });
 
 app.get('/pet', (req, res, next) => {
@@ -36,13 +34,12 @@ app.get('/pet', (req, res, next) => {
 
 app.get('/weather', (req, res, next) => {
   try {
-    let lat = req.query.lat;
-    let lon = req.query.lon;
+    // let lat = req.query.lat;
+    // let lon = req.query.lon;
     let searchQuery = req.query.city_name;
-    let userCity = data.find((cityObj => cityObj.city_name === searchQuery));
-    // console.log(userCity);
-    // console.log(data);
-    let strippedData = new Forecast(userCity, lat, lon);
+    let userCity = data.find((cityObj => cityObj.city_name.toLowerCase() === searchQuery.toLowerCase()));
+    console.log(userCity);
+    let strippedData = userCity.data.map(day => new Forecast(day));
     console.log(strippedData);
     res.status(200).send(strippedData);
 
@@ -52,15 +49,9 @@ app.get('/weather', (req, res, next) => {
 });
 
 class Forecast {
-  constructor(cityObj, lat, lon) {
-    this.dateTimeOne = cityObj.data[0].datetime;
-    this.descriptionOne = cityObj.data[0].weather.description;
-    this.dateTimeTwo = cityObj.data[1].datetime;
-    this.descriptionTwo = cityObj.data[1].weather.description;
-    this.dateTimeThree = cityObj.data[2].datetime;
-    this.descriptionThree = cityObj.data[2].weather.description;
-    this.lat = lat;
-    this.lon = lon;
+  constructor(day) {
+    this.dateTime = day.datetime;
+    this.description = day.weather.description;
   }
 }
 
