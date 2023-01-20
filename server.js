@@ -1,33 +1,25 @@
 'use strict';
-
-// *********** REQUIRE ************************
-const express = require('express');
-const app = express();
+// *** REQUIRES***************************
 require('dotenv').config();
+const express = require('express');
 const cors = require('cors');
-const getWeather = require('./modules/weather');
+const weather = require('./modules/newWeather.js');
 const getMovies = require('./modules/movies');
-
-// ****************** MIDDLEWARE *************************
+const app = express();
+// ***** MIDDLEWARE ************************
 app.use(cors());
-
-// ********************** ROUTING *****************************
-app.get('/', (req, res) => {
-  res.status(200).send(`Welcome to my home`);
-});
-
-app.get('/weather', getWeather);
-
+// ********* ENDPOINTS *************************
+app.get('/weather', weatherHandler);
 app.get('/movies', getMovies);
 
-// ***************** BOILERPLATE ***********************
-app.get('*', (req, res) => {
-  res.status(404).send('Sorry you messed that up and have arrived at a page that does not exist. 404');
-});
+function weatherHandler(request, response) {
+  const { lat, lon } = request.query;
+  weather(lat, lon)
+    .then(summaries => response.send(summaries))
+    .catch((error) => {
+      console.error(error);
+      response.status(200).send('Sorry. Something went wrong!');
+    });
+}
 
-app.use((error, req, res, next) => {
-  res.status(500).send(error.message);
-});
-
-const PORT = process.env.PORT || 3002;
-app.listen(PORT, () => console.log(`Listening on port ${PORT}`));
+app.listen(process.env.PORT, () => console.log(`Server up on ${process.env.PORT}`));
